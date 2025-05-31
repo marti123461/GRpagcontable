@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { UserGuide } from "@/components/user-guide"
 import { ClientPortal } from "@/components/client-portal"
 import { AccountingSystem } from "@/components/accounting-system"
+import { IntelligentChatbot } from "@/components/intelligent-chatbot"
 import { useState } from "react"
 
 export default function Home() {
@@ -21,10 +22,7 @@ export default function Home() {
 
   const handleGetStarted = () => {
     setShowAccountingSystem(true)
-    // Añadimos un pequeño timeout para asegurar que el componente esté montado
     setTimeout(() => {
-      // Aquí podríamos comunicarnos con el componente AccountingSystem
-      // pero para simplificar, mostraremos un mensaje informativo
       alert("¡Bienvenido al Sistema Contable! Selecciona el plan que mejor se adapte a tus necesidades.")
     }, 500)
   }
@@ -553,5 +551,9 @@ export default function Home() {
 
       {/* Sistema de Contabilidad */}
       {showAccountingSystem && <AccountingSystem onClose={() => setShowAccountingSystem(false)} />}
-\
+
       {/* Chatbot Inteligente */}
+      {showChatbot && <IntelligentChatbot onClose={() => setShowChatbot(false)} />}
+    </div>
+  )
+}
