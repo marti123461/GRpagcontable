@@ -3,15 +3,18 @@ import { Calculator, ChevronRight, Clock, FileText, BarChart3, Mail, Phone, Star
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { UserGuide } from "@/components/user-guide"
-import { ClientPortal } from "@/components/client-portal"
 import { AccountingSystem } from "@/components/accounting-system"
 import { IntelligentChatbot } from "@/components/intelligent-chatbot"
+import { LoginModal } from "@/components/login-modal"
+import { useAuth } from "@/components/auth-provider"
 import { useState } from "react"
 
 export default function Home() {
+  const { isAuthenticated, user, logout } = useAuth()
   const [showServiceDetails, setShowServiceDetails] = useState<string | null>(null)
   const [showAccountingSystem, setShowAccountingSystem] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
+  const [showLoginModal, setShowLoginModal] = useState(false)
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -21,41 +24,35 @@ export default function Home() {
   }
 
   const handleGetStarted = () => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
     setShowAccountingSystem(true)
-    setTimeout(() => {
-      alert("¡Bienvenido al Sistema Contable! Selecciona el plan que mejor se adapte a tus necesidades.")
-    }, 500)
   }
 
   const handleLearnMore = () => {
     scrollToSection("servicios")
-    alert(
-      "Explore nuestros servicios detallados a continuación. ¿Tiene alguna pregunta? Use nuestro chatbot en la esquina inferior derecha.",
-    )
   }
 
   const handleFreeConsultation = () => {
-    alert(
-      "¡Perfecto! Para su consulta gratuita, contáctenos al 809-448-3593 o martiaveturatejeda@gmail.com. También puede usar nuestro chatbot para programar una cita.",
-    )
+    alert("¡Perfecto! Para su consulta gratuita, contáctenos al 809-448-3593 o martiaveturatejeda@gmail.com.")
   }
 
   const handleServiceClick = (serviceName: string) => {
+    if (!isAuthenticated) {
+      setShowLoginModal(true)
+      return
+    }
     setShowServiceDetails(serviceName)
     alert(
-      `Información detallada sobre ${serviceName}:\n\n• Consulta inicial gratuita\n• Propuesta personalizada\n• Implementación paso a paso\n• Soporte continuo\n\n¿Desea más información? Contáctenos directamente o use el chatbot.`,
+      `Información detallada sobre ${serviceName}:\n\n• Consulta inicial gratuita\n• Propuesta personalizada\n• Implementación paso a paso\n• Soporte continuo`,
     )
   }
 
   const handleTeamClick = () => {
     alert(
-      `Nuestro Equipo Profesional:\n\n👨‍💼 Jhonson'S Brioso Tejeda - Contador Principal\n• 15+ años de experiencia\n• Certificado en contabilidad pública\n• Especialista en asesoría fiscal\n\n👥 Equipo de apoyo:\n• 5 contadores certificados\n• 3 especialistas en nóminas\n• 2 asesores fiscales\n\n¿Desea conocernos? ¡Contáctenos para programar una reunión!`,
-    )
-  }
-
-  const handleContactClick = () => {
-    alert(
-      "Formas de contactarnos:\n\n📞 Teléfono: 809-448-3593\n📧 Email: martiaveturatejeda@gmail.com\n💬 Chatbot: Esquina inferior derecha\n👤 Contador: Jhonson'S Brioso Tejeda\n\n¡Estamos aquí para ayudarle!",
+      `Nuestro Equipo Profesional:\n\n👨‍💼 Jhonson'S Brioso Tejeda - Contador Principal\n• 15+ años de experiencia\n• Certificado en contabilidad pública\n• Especialista en asesoría fiscal`,
     )
   }
 
@@ -103,32 +100,25 @@ export default function Home() {
             </button>
           </nav>
           <div className="flex items-center gap-2">
-            <ClientPortal />
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Hola, {user?.name}</span>
+                <Button variant="outline" size="sm" onClick={logout}>
+                  Cerrar Sesión
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" onClick={() => setShowLoginModal(true)}>
+                Iniciar Sesión
+              </Button>
+            )}
             <Button variant="outline" className="hidden md:flex" onClick={handleFreeConsultation}>
               Consulta Gratis
             </Button>
           </div>
-          <Button variant="outline" size="icon" className="md:hidden">
-            <span className="sr-only">Toggle menu</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-5 w-5"
-            >
-              <line x1="4" x2="20" y1="12" y2="12" />
-              <line x1="4" x2="20" y1="6" y2="6" />
-              <line x1="4" x2="20" y1="18" y2="18" />
-            </svg>
-          </Button>
         </div>
       </header>
+
       <main className="flex-1">
         {/* Hero Section */}
         <section
@@ -152,7 +142,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
                   <Button size="lg" className="px-8 bg-blue-600 hover:bg-blue-700" onClick={handleGetStarted}>
-                    🚀 Probar Sistema Contable
+                    🚀 {isAuthenticated ? "Abrir Sistema Contable" : "Iniciar Sesión para Probar"}
                   </Button>
                   <Button size="lg" variant="outline" className="px-8" onClick={handleLearnMore}>
                     Conocer más
@@ -170,7 +160,7 @@ export default function Home() {
               <div className="flex items-center justify-center">
                 <div
                   className="relative rounded-xl overflow-hidden shadow-2xl cursor-pointer"
-                  onClick={() => setShowAccountingSystem(true)}
+                  onClick={handleGetStarted}
                 >
                   <div className="bg-blue-100 w-full h-64 md:h-80 flex items-center justify-center hover:bg-blue-200 transition-colors">
                     <Calculator className="h-24 w-24 text-blue-500 opacity-30" />
@@ -178,7 +168,9 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="bg-white/90 px-4 py-2 rounded-lg">
-                      <span className="text-sm font-medium">Probar Sistema</span>
+                      <span className="text-sm font-medium">
+                        {isAuthenticated ? "Abrir Sistema" : "Iniciar Sesión"}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -191,37 +183,19 @@ export default function Home() {
         <section className="w-full py-12 bg-white dark:bg-gray-900">
           <div className="container px-4 md:px-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              <div
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-                onClick={() =>
-                  alert("15 años sirviendo a empresas de todos los tamaños con excelencia y profesionalismo.")
-                }
-              >
+              <div className="text-center cursor-pointer hover:scale-105 transition-transform">
                 <div className="text-3xl font-bold text-blue-600">15+</div>
                 <div className="text-sm text-gray-600">Años de experiencia</div>
               </div>
-              <div
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-                onClick={() =>
-                  alert("Más de 500 empresas confían en nosotros para sus necesidades contables y fiscales.")
-                }
-              >
+              <div className="text-center cursor-pointer hover:scale-105 transition-transform">
                 <div className="text-3xl font-bold text-green-600">500+</div>
                 <div className="text-sm text-gray-600">Clientes satisfechos</div>
               </div>
-              <div
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-                onClick={() =>
-                  alert("Hemos procesado más de 1000 declaraciones de impuestos con precisión y puntualidad.")
-                }
-              >
+              <div className="text-center cursor-pointer hover:scale-105 transition-transform">
                 <div className="text-3xl font-bold text-purple-600">1000+</div>
                 <div className="text-sm text-gray-600">Declaraciones procesadas</div>
               </div>
-              <div
-                className="text-center cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => alert("Garantizamos 99% de precisión en todos nuestros servicios contables y fiscales.")}
-              >
+              <div className="text-center cursor-pointer hover:scale-105 transition-transform">
                 <div className="text-3xl font-bold text-orange-600">99%</div>
                 <div className="text-sm text-gray-600">Precisión garantizada</div>
               </div>
@@ -273,7 +247,7 @@ export default function Home() {
                     </div>
                   </div>
                   <button className="inline-flex items-center gap-1 text-sm font-medium text-primary mt-4 hover:underline">
-                    Más información
+                    {isAuthenticated ? "Más información" : "Iniciar sesión para ver más"}
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </CardContent>
@@ -309,7 +283,7 @@ export default function Home() {
                     </div>
                   </div>
                   <button className="inline-flex items-center gap-1 text-sm font-medium text-primary mt-4 hover:underline">
-                    Más información
+                    {isAuthenticated ? "Más información" : "Iniciar sesión para ver más"}
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </CardContent>
@@ -345,7 +319,7 @@ export default function Home() {
                     </div>
                   </div>
                   <button className="inline-flex items-center gap-1 text-sm font-medium text-primary mt-4 hover:underline">
-                    Más información
+                    {isAuthenticated ? "Más información" : "Iniciar sesión para ver más"}
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </CardContent>
@@ -370,37 +344,19 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="space-y-4">
-                  <div
-                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    onClick={() =>
-                      alert("Todos nuestros contadores están certificados y actualizados con las últimas normativas.")
-                    }
-                  >
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     <span>Contadores públicos certificados</span>
                   </div>
-                  <div
-                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    onClick={() => alert("Estamos disponibles 24/7 para resolver sus dudas y emergencias contables.")}
-                  >
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     <span>Atención personalizada 24/7</span>
                   </div>
-                  <div
-                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    onClick={() =>
-                      alert("Utilizamos software contable de última generación para mayor precisión y eficiencia.")
-                    }
-                  >
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     <span>Tecnología de vanguardia</span>
                   </div>
-                  <div
-                    className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded"
-                    onClick={() =>
-                      alert("Garantizamos el cumplimiento de todas las normativas fiscales y contables vigentes.")
-                    }
-                  >
+                  <div className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded">
                     <CheckCircle className="h-5 w-5 text-green-500" />
                     <span>Cumplimiento normativo garantizado</span>
                   </div>
@@ -468,29 +424,20 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-                {/* Phone Contact */}
-                <div
-                  className="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow text-center"
-                  onClick={() => window.open("tel:809-448-3593")}
-                >
+                <div className="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow text-center">
                   <Phone className="h-12 w-12 text-blue-500 mx-auto mb-4" />
                   <h3 className="text-lg font-medium mb-2">Llámenos</h3>
                   <p className="text-blue-600 font-semibold">809-448-3593</p>
                   <p className="text-sm text-gray-600 mt-2">Disponible 24/7</p>
                 </div>
 
-                {/* Email Contact */}
-                <div
-                  className="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow text-center"
-                  onClick={() => window.open("mailto:martiaveturatejeda@gmail.com")}
-                >
+                <div className="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow text-center">
                   <Mail className="h-12 w-12 text-green-500 mx-auto mb-4" />
                   <h3 className="text-lg font-medium mb-2">Escríbanos</h3>
                   <p className="text-green-600 font-semibold text-sm">martiaveturatejeda@gmail.com</p>
                   <p className="text-sm text-gray-600 mt-2">Respuesta en 24h</p>
                 </div>
 
-                {/* Chatbot Contact */}
                 <div
                   className="bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition-shadow text-center"
                   onClick={() => setShowChatbot(true)}
@@ -515,6 +462,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+
       <footer className="w-full border-t py-6 md:py-8">
         <div className="container flex flex-col items-center justify-center gap-4 md:flex-row md:justify-between">
           <div className="flex items-center gap-2 font-bold cursor-pointer" onClick={() => scrollToSection("hero")}>
@@ -525,34 +473,27 @@ export default function Home() {
             © 2025 MiPaginaContable. Todos los derechos reservados.
           </p>
           <div className="flex gap-4">
-            <button
-              onClick={() =>
-                alert(
-                  "Términos y Condiciones:\n\n• Servicios profesionales garantizados\n• Confidencialidad total\n• Cumplimiento normativo\n• Soporte continuo",
-                )
-              }
-              className="text-gray-500 hover:text-primary dark:text-gray-400"
-            >
-              Términos
-            </button>
-            <button
-              onClick={() =>
-                alert(
-                  "Política de Privacidad:\n\n• Sus datos están protegidos\n• No compartimos información\n• Cumplimos con GDPR\n• Máxima confidencialidad",
-                )
-              }
-              className="text-gray-500 hover:text-primary dark:text-gray-400"
-            >
-              Privacidad
-            </button>
+            <button className="text-gray-500 hover:text-primary dark:text-gray-400">Términos</button>
+            <button className="text-gray-500 hover:text-primary dark:text-gray-400">Privacidad</button>
           </div>
         </div>
       </footer>
 
-      {/* Sistema de Contabilidad */}
+      {/* Modales */}
+      {showLoginModal && (
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onSuccess={() => {
+            setShowLoginModal(false)
+            if (showAccountingSystem) {
+              // Si ya tenían intención de abrir el sistema, abrirlo después del login
+              setShowAccountingSystem(true)
+            }
+          }}
+        />
+      )}
       {showAccountingSystem && <AccountingSystem onClose={() => setShowAccountingSystem(false)} />}
-
-      {/* Chatbot Inteligente */}
       {showChatbot && <IntelligentChatbot onClose={() => setShowChatbot(false)} />}
     </div>
   )
