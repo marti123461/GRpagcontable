@@ -114,6 +114,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  // Add payment verification method
+  const verifyPayment = async (paymentId: string): Promise<boolean> => {
+    try {
+      // Verificar el pago con PayPal API
+      const response = await fetch("/api/verify-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ paymentId }),
+      })
+
+      const result = await response.json()
+      return result.verified === true
+    } catch (error) {
+      console.error("Payment verification error:", error)
+      return false
+    }
+  }
+
   const register = async (userData: RegisterData): Promise<boolean> => {
     try {
       // Simular registro (en producción sería una API real)
@@ -152,8 +172,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user")
   }
 
-  const updateSubscription = (plan: string, paymentId: string) => {
+  const updateSubscription = async (plan: string, paymentId: string) => {
     if (!user) return
+
+    // Verificar el pago antes de activar la suscripción
+    const paymentVerified = await verifyPayment(paymentId)
+
+    if (!paymentVerified) {
+      alert("Error: No se pudo verificar el pago. La suscripción no ha sido activada.")
+      return
+    }
 
     const updatedUser: User = {
       ...user,

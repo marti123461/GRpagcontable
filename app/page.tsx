@@ -5,16 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { UserGuide } from "@/components/user-guide"
 import { AccountingSystem } from "@/components/accounting-system"
 import { IntelligentChatbot } from "@/components/intelligent-chatbot"
-import { LoginModal } from "@/components/login-modal"
 import { useAuth } from "@/components/auth-provider"
 import { useState } from "react"
+import Link from "next/link"
 
 export default function Home() {
   const { isAuthenticated, user, logout } = useAuth()
   const [showServiceDetails, setShowServiceDetails] = useState<string | null>(null)
   const [showAccountingSystem, setShowAccountingSystem] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
-  const [showLoginModal, setShowLoginModal] = useState(false)
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -25,7 +24,8 @@ export default function Home() {
 
   const handleGetStarted = () => {
     if (!isAuthenticated) {
-      setShowLoginModal(true)
+      // Redirigir a la página de login en lugar de abrir modal
+      window.location.href = "/login"
       return
     }
     setShowAccountingSystem(true)
@@ -41,7 +41,8 @@ export default function Home() {
 
   const handleServiceClick = (serviceName: string) => {
     if (!isAuthenticated) {
-      setShowLoginModal(true)
+      // Redirigir a la página de login en lugar de abrir modal
+      window.location.href = "/login"
       return
     }
     setShowServiceDetails(serviceName)
@@ -108,9 +109,14 @@ export default function Home() {
                 </Button>
               </div>
             ) : (
-              <Button variant="outline" onClick={() => setShowLoginModal(true)}>
-                Iniciar Sesión
-              </Button>
+              <div className="flex items-center gap-2">
+                <Link href="/login">
+                  <Button variant="outline">Iniciar Sesión</Button>
+                </Link>
+                <Link href="/register">
+                  <Button>Registrarse</Button>
+                </Link>
+              </div>
             )}
             <Button variant="outline" className="hidden md:flex" onClick={handleFreeConsultation}>
               Consulta Gratis
@@ -480,19 +486,6 @@ export default function Home() {
       </footer>
 
       {/* Modales */}
-      {showLoginModal && (
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onSuccess={() => {
-            setShowLoginModal(false)
-            if (showAccountingSystem) {
-              // Si ya tenían intención de abrir el sistema, abrirlo después del login
-              setShowAccountingSystem(true)
-            }
-          }}
-        />
-      )}
       {showAccountingSystem && <AccountingSystem onClose={() => setShowAccountingSystem(false)} />}
       {showChatbot && <IntelligentChatbot onClose={() => setShowChatbot(false)} />}
     </div>

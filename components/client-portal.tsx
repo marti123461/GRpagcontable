@@ -152,130 +152,129 @@ function AuthForm({ onLogin }: AuthFormProps) {
           </div>
 
           {!isRegister ? (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-email">Correo Electrónico</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <div className="max-h-[70vh] overflow-y-auto">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">Correo Electrónico</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="login-email"
+                      name="email"
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={loginData.email}
+                      onChange={handleLoginChange}
+                      className="pl-10"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Contraseña</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="login-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Tu contraseña"
+                      value={loginData.password}
+                      onChange={handleLoginChange}
+                      className="pl-10 pr-10"
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                </Button>
+              </form>
+            </div>
+          ) : (
+            <div className="max-h-[70vh] overflow-y-auto">
+              <form onSubmit={handleRegister} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="register-name">Nombre Completo</Label>
                   <Input
-                    id="login-email"
+                    id="register-name"
+                    name="name"
+                    placeholder="Tu nombre completo"
+                    value={registerData.name}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-email">Correo Electrónico</Label>
+                  <Input
+                    id="register-email"
                     name="email"
                     type="email"
                     placeholder="tu@email.com"
-                    value={loginData.email}
-                    onChange={handleLoginChange}
-                    className="pl-10"
+                    value={registerData.email}
+                    onChange={handleRegisterChange}
                     required
                   />
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-password">Contraseña</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <div className="space-y-2">
+                  <Label htmlFor="register-phone">Teléfono (Opcional)</Label>
                   <Input
-                    id="login-password"
+                    id="register-phone"
+                    name="phone"
+                    placeholder="809-123-4567"
+                    value={registerData.phone}
+                    onChange={handleRegisterChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-company">Empresa (Opcional)</Label>
+                  <Input
+                    id="register-company"
+                    name="company"
+                    placeholder="Nombre de tu empresa"
+                    value={registerData.company}
+                    onChange={handleRegisterChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-password">Contraseña</Label>
+                  <Input
+                    id="register-password"
                     name="password"
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Tu contraseña"
-                    value={loginData.password}
-                    onChange={handleLoginChange}
-                    className="pl-10 pr-10"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={registerData.password}
+                    onChange={handleRegisterChange}
                     required
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-0 top-0 h-full px-3"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </Button>
                 </div>
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
-              </Button>
-              <div className="text-center text-sm text-gray-500 space-y-1">
-                <p>Usuarios demo:</p>
-                <p>juan@empresa.com / 123456</p>
-                <p>maria@negocio.com / 123456</p>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleRegister} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="register-name">Nombre Completo</Label>
-                <Input
-                  id="register-name"
-                  name="name"
-                  placeholder="Tu nombre completo"
-                  value={registerData.name}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-email">Correo Electrónico</Label>
-                <Input
-                  id="register-email"
-                  name="email"
-                  type="email"
-                  placeholder="tu@email.com"
-                  value={registerData.email}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-phone">Teléfono (Opcional)</Label>
-                <Input
-                  id="register-phone"
-                  name="phone"
-                  placeholder="809-123-4567"
-                  value={registerData.phone}
-                  onChange={handleRegisterChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-company">Empresa (Opcional)</Label>
-                <Input
-                  id="register-company"
-                  name="company"
-                  placeholder="Nombre de tu empresa"
-                  value={registerData.company}
-                  onChange={handleRegisterChange}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-password">Contraseña</Label>
-                <Input
-                  id="register-password"
-                  name="password"
-                  type="password"
-                  placeholder="Mínimo 6 caracteres"
-                  value={registerData.password}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="register-confirm-password">Confirmar Contraseña</Label>
-                <Input
-                  id="register-confirm-password"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="Confirma tu contraseña"
-                  value={registerData.confirmPassword}
-                  onChange={handleRegisterChange}
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
-              </Button>
-            </form>
+                <div className="space-y-2">
+                  <Label htmlFor="register-confirm-password">Confirmar Contraseña</Label>
+                  <Input
+                    id="register-confirm-password"
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Confirma tu contraseña"
+                    value={registerData.confirmPassword}
+                    onChange={handleRegisterChange}
+                    required
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Creando cuenta..." : "Crear Cuenta"}
+                </Button>
+              </form>
+            </div>
           )}
         </div>
       </CardContent>
@@ -429,7 +428,7 @@ export function ClientPortal() {
           Portal Cliente
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{user ? "Panel de Cliente" : "Acceso al Portal"}</DialogTitle>
         </DialogHeader>
